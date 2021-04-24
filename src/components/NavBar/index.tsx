@@ -17,13 +17,19 @@ import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import SchoolIcon from '@material-ui/icons/School';
-import PersonIcon from '@material-ui/icons/Person';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import MoneyOffIcon from '@material-ui/icons/MoneyOff';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import logo from '../../assets/logo_menu.png'
 import { UIStore } from '../../services/Store';
-import { useHistory } from 'react-router';
+import { useHistory, NavLink as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
 const drawerWidth = 240;
+
+interface ListItemLinkProps {
+  icon: React.ReactElement;
+  primary: string;
+  to: string;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,6 +64,7 @@ const useStyles = makeStyles((theme: Theme) =>
       whiteSpace: 'nowrap',
     },
     drawerOpen: {
+      backgroundColor: "#FF8066",
       width: drawerWidth,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
@@ -65,17 +72,16 @@ const useStyles = makeStyles((theme: Theme) =>
       }),
     },
     drawerClose: {
+      backgroundColor: "#FF8066",
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
       overflowX: 'hidden',
       width: theme.spacing(7) + 1,
-      [theme.breakpoints.up('sm')]: {
-        width: theme.spacing(9) + 1,
-      },
     },
     toolbar: {
+      backgroundColor: "#FF8066",
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'flex-end',
@@ -90,6 +96,16 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       padding: theme.spacing(3),
     },
+    active: {
+      backgroundColor: "#ff0000"
+    },
+    icon: {
+      color: "#FFF"
+    },
+    list: {
+      backgroundColor: "#FF8066",
+      color: "#FFF"
+    }
   }),
 );
 
@@ -98,6 +114,27 @@ const NavBar = () => {
   const theme = useTheme();
   const history = useHistory();
   const [ open, setOpen ] = React.useState(false);
+  
+  function ListItemLink(props: ListItemLinkProps) {
+    const { icon, primary, to } = props;
+  
+    const renderLink = React.useMemo(
+      () =>
+        React.forwardRef<any, Omit<RouterLinkProps, 'to'>>((itemProps, ref) => (
+          <RouterLink activeClassName={classes.active}  to={to} ref={ref} {...itemProps} />
+        )),
+      [to],
+    );
+  
+    return (
+      <li>
+        <ListItem button component={renderLink}>
+          <ListItemIcon>{icon}</ListItemIcon>
+          <ListItemText primary={primary} />
+        </ListItem>
+      </li>
+    );
+  }
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -116,7 +153,7 @@ const NavBar = () => {
   }
 
   return (
-    <div>
+    <div className={classes.paperRoot}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -124,7 +161,10 @@ const NavBar = () => {
           clsx(classes.appBar, {
             [classes.appBarShift]: open,
           })
-      }
+        }
+        classes={{
+          root: classes.paperRoot
+        }}
       >
         <Toolbar>
           <IconButton
@@ -159,49 +199,91 @@ const NavBar = () => {
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </div>
-        <Divider />
-        <List>
-          <ListItem button key={"Página Inicial"}>
-            <ListItemIcon>
-              <HomeIcon color="error" />
-            </ListItemIcon>
-            <ListItemText primary={"Página Inicial"} />
-          </ListItem>
-          <ListItem button key={"Alunos"}>
-            <ListItemIcon>
-              <AccountCircleIcon color="error" />
-            </ListItemIcon>
-            <ListItemText primary={"Alunos"} />
-          </ListItem>
-          <ListItem button key={"Finanças"}>
-            <ListItemIcon>
-              <AttachMoneyIcon color="error" />
-            </ListItemIcon>
-            <ListItemText primary={"Finanças"} />
-          </ListItem>
-          <ListItem button key={"Cursos"}>
-            <ListItemIcon>
-              <SchoolIcon color="error"/>
-            </ListItemIcon>
-            <ListItemText primary={"Cursos"} />
-          </ListItem>
-          <ListItem button key={"Alunos"}>
-            <ListItemIcon>
-              <PersonIcon color="error" />
-            </ListItemIcon>
-            <ListItemText primary={"Alunos "} />
-          </ListItem>
+        <Divider 
+          classes={{
+            root: classes.paperRoot
+          }}
+        />
+        <List
+          classes={{
+            root: classes.list
+          }}
+        >
+          <ListItemLink 
+            icon={
+              <HomeIcon 
+                classes={{
+                  root: classes.icon
+                }}
+              />
+            } 
+            to="home" 
+            primary="Página Inicial"
+          />
+          <ListItemLink 
+            icon={
+              <AccountCircleIcon
+                classes={{
+                  root: classes.icon
+                }}
+              />
+            } 
+            to="students" 
+            primary="Alunos"
+          />
+          <ListItemLink
+            icon={
+              <SchoolIcon
+                classes={{
+                  root: classes.icon
+                }}
+              />
+            } 
+            to="courses" 
+            primary="Cursos"
+          />
+          <ListItemLink 
+            icon={
+              <AttachMoneyIcon
+                classes={{
+                  root: classes.icon
+                }}
+              />
+            } 
+            to="payments" 
+            primary="Pagamentos"
+          />
+          <ListItemLink 
+            icon={
+              <MoneyOffIcon
+                classes={{
+                  root: classes.icon
+                }}
+              />
+            }
+            to="expenditures"
+            primary="Despesas"
+          />
           <ListItem button onClick={() => handleLogout()} key={"Sair"}>
             <ListItemIcon >
-              <ExitToAppIcon color="error" />
+              <ExitToAppIcon
+                classes={{
+                  root: classes.icon
+                }}
+              />
             </ListItemIcon>
             <ListItemText primary={"Sair"} />
           </ListItem>
         </List>
-        <Divider />
+        <Divider 
+          classes={{
+            root: classes.paperRoot
+          }}
+        />
         <img style={{
-          marginTop: '10px'
-        }}  src={logo} alt=""/>
+          borderRadius: "50%",
+          backgroundColor: "#FFF"
+        }}  src={logo} alt="Escola CICI"/>
       </Drawer>
     </div>
   )
