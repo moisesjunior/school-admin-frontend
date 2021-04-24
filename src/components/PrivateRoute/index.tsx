@@ -1,12 +1,20 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
+import { UIStore } from '../../services/Store';
 
 const renewOrExpire = async (hours: number): Promise<boolean> => {
   const expirationTime = localStorage.getItem('expirationTime');
 
   if(new Date().getTime() >= Number(expirationTime)){
+    localStorage.clear();
+    UIStore.replace({
+      signed: false
+    });
+    window.location.replace('/');
     return false;
   } else {
+    const expirationTime = new Date().setHours(new Date().getHours() + hours);
+    localStorage.setItem('expirationTime', String(expirationTime));
     return true;
   }
 }

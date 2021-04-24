@@ -67,6 +67,10 @@ const Login = (): JSX.Element => {
       s.signed = true
     });
     localStorage.setItem('signed', 'true');
+
+    const expirationTime = new Date().setHours(new Date().getHours() + 8);
+    localStorage.setItem('expirationTime', String(expirationTime));
+
     history.push('/home');
   }
 
