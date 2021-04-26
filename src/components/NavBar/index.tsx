@@ -23,6 +23,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import logo from '../../assets/logo_menu.png'
 import { UIStore } from '../../services/Store';
 import { useHistory, NavLink as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
+import Auth from '@aws-amplify/auth';
 const drawerWidth = 240;
 
 interface ListItemLinkProps {
@@ -145,6 +146,7 @@ const NavBar = () => {
   };
 
   const handleLogout = async () => {
+    await Auth.signOut();
     localStorage.clear();
     UIStore.update(s => {
       s.signed = false
