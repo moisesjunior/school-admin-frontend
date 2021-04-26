@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import '../../assets/global.css'
 import { Button, FormControl, TextField, Typography } from '@material-ui/core';
 import logo from '../../assets/logo.png'
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
+import Swal from 'sweetalert2';
+import { Auth } from 'aws-amplify';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,13 +58,56 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Login = (): JSX.Element => {
+interface State {
+  username: string;
+}
+
+const RenewPassword = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
+  const location = useLocation<State>();
+  const [ username, setUsername ] = useState('');
+  const [ code, setCode ] = useState('');
+  const [ password, setPassword ] = useState('');
+  const [ confirmPassword, setConfirmPassword ] = useState('');
   
-  
-  const handleSubmit = () => {
-    history.push('/');
+  useEffect(() => {
+    if(location.state !== undefined) {
+      setUsername(location.state.username);
+    }
+  }, [location.state])
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if(confirmPassword !== password){
+      Swal.fire({
+        icon: 'error',
+        title: 'Atenção!',
+        text: 'A senha e confirmação de senha não coincidem!'
+      });
+      return;
+    }
+
+    if(code.length !== 6 || code.match(/\D/) !== null){
+      Swal.fire({
+        icon: 'error',
+        title: 'Atenção!',
+        text: 'O código de recuperação precisa de 6 dígitos numéricos!'
+      });
+      return;
+    }
+
+    try {
+      await Auth.forgotPasswordSubmit(username, code, password);
+      history.push('/');
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Atenção!',
+        text: 'Ocorreu um erro ao tentar alterar a senha!'
+      });
+    }
   }
 
   return (
@@ -85,6 +130,9 @@ const Login = (): JSX.Element => {
                 variant="outlined"
                 label="Código"
                 fullWidth
+                required
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -93,6 +141,9 @@ const Login = (): JSX.Element => {
                 variant="outlined"
                 label="Nova senha"
                 fullWidth
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -101,6 +152,9 @@ const Login = (): JSX.Element => {
                 variant="outlined"
                 label="Confirmação de senha"
                 fullWidth
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -118,4 +172,4 @@ const Login = (): JSX.Element => {
   )
 }
 
-export default Login;
+export default RenewPassword;
