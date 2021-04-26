@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { FormEvent, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import '../../assets/global.css'
 import { Button, FormControl, TextField, Typography } from '@material-ui/core';
 import logo from '../../assets/logo.png'
 import { useHistory } from 'react-router';
 import { UIStore } from '../../services/Store';
+import { Auth } from 'aws-amplify';
+import Swal from 'sweetalert2';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,21 +59,52 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const translate = (text: string): string => {
+  const messages: { [key: string]: string } = {
+    "Incorrect username or password.": "Usuário ou senha incorretos."
+  };
+
+  return messages[text];
+}
+
 const Login = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
-  
-  
-  const handleSubmit = () => {
-    UIStore.update(s => {
-      s.signed = true
-    });
-    localStorage.setItem('signed', 'true');
+  const [ username, setUsername ] = useState('');
+  const [ password, setPassword ] = useState('');
 
-    const expirationTime = new Date().setHours(new Date().getHours() + 8);
-    localStorage.setItem('expirationTime', String(expirationTime));
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
 
-    history.push('/home');
+    try {
+      const user = await Auth.signIn(username, password);
+
+      if(user.challengeName === 'NEW_PASSWORD_REQUIRED'){
+        history.push({
+          pathname: "nova-senha",
+          state: {
+            username,
+            password
+          }
+        })
+      } else {
+        UIStore.update(s => {
+          s.signed = true
+        });
+        localStorage.setItem('signed', 'true');
+    
+        const expirationTime = new Date().setHours(new Date().getHours() + 8);
+        localStorage.setItem('expirationTime', String(expirationTime));
+    
+        history.push('/home');
+      }
+    } catch (error) {      
+      Swal.fire({
+        icon: "error",
+        title: "Atenção!",
+        text: translate(error.message)
+      });
+    }
   }
 
   return (
@@ -91,9 +124,13 @@ const Login = (): JSX.Element => {
           <form onSubmit={handleSubmit} className={classes.formLogin}>
             <FormControl>
               <TextField 
+                type="text"
                 variant="outlined"
                 label="Usuário"
+                required
                 fullWidth
+                onChange={(event) => setUsername(event.target.value)}
+                value={username}
               />
             </FormControl>
             <FormControl>
@@ -101,7 +138,10 @@ const Login = (): JSX.Element => {
                 type="password"
                 variant="outlined"
                 label="Senha"
+                required
                 fullWidth
+                onChange={(event) => setPassword(event.target.value)}
+                value={password}
               />
             </FormControl>
             <FormControl>

@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import PrivateRoute from './components/PrivateRoute';
+import ConfirmNewPassword from './pages/ConfirmNewPassword';
 import ClassAtCourses from './pages/Course/ClassAtCourses';
 import FormCourse from './pages/Course/Form';
 import ListCourse from './pages/Course/List';
@@ -78,6 +79,7 @@ const Router = () => {
         ) : (
           <Switch>
             <Route exact path="/" component={Login}/>
+            <Route path="/nova-senha" component={ConfirmNewPassword}/>
             <Route path="/forgotPassword" component={ForgotPassword}/>
             <Route path="/renewPassword" component={RenewPassword}/>
           </Switch>

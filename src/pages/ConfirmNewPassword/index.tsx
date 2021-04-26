@@ -3,9 +3,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import '../../assets/global.css'
 import { Button, FormControl, TextField, Typography } from '@material-ui/core';
 import logo from '../../assets/logo.png'
-import { useHistory, useLocation } from 'react-router';
-import Swal from 'sweetalert2';
+import { useHistory } from 'react-router';
+import { UIStore } from '../../services/Store';
 import { Auth } from 'aws-amplify';
+import Swal from 'sweetalert2';
+import { useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     width: "500px",
     display: "grid",
     gridGap: "20px",
-    marginTop: "20%"
+    marginTop: "10%"
   },
   button: {
     backgroundColor: "#FF8066",
@@ -58,54 +60,70 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface State {
-  username: string;
+const translate = (text: string): string => {
+  const messages: { [key: string]: string } = {
+    "Incorrect username or password.": "Usuário ou senha incorretos."
+  };
+
+  return messages[text];
 }
 
-const RenewPassword = (): JSX.Element => {
+interface State {
+  username: string;
+  password: string;
+}
+
+const ConfirmNewPassword = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation<State>();
   const [ username, setUsername ] = useState('');
-  const [ code, setCode ] = useState('');
+  const [ oldPassword, setOldPassword ] = useState('');
+  const [ name, setName ] = useState('');
+  const [ familyName, setFamilyName ] = useState('');
   const [ password, setPassword ] = useState('');
-  const [ confirmPassword, setConfirmPassword ] = useState('');
-  
+  const [ newPassword, setNewPassword ] = useState('');
+
   useEffect(() => {
-    if(location.state !== undefined) {
+    if(location.state !== undefined){
       setUsername(location.state.username);
+      setOldPassword(location.state.password);
     }
-  }, [location.state])
+  }, [location.state]);
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    if(confirmPassword !== password){
+    if(password !== newPassword){
       Swal.fire({
         icon: 'error',
         title: 'Atenção!',
-        text: 'A senha e confirmação de senha não coincidem!'
-      });
-      return;
-    }
-
-    if(code.length !== 6 || code.match(/\D/) !== null){
-      Swal.fire({
-        icon: 'error',
-        title: 'Atenção!',
-        text: 'O código de recuperação precisa de 6 dígitos numéricos!'
-      });
-      return;
+        text: 'A senha e confirmação de senha não coincidem.'
+      })
     }
 
     try {
-      await Auth.forgotPasswordSubmit(username, code, password);
-      history.push('/');
-    } catch (error) {
+      const user = await Auth.signIn(username, oldPassword);
+
+      await Auth.completeNewPassword(user, password, {
+        name,
+        family_name: familyName
+      });
+
+      UIStore.update(s => {
+        s.signed = true
+      });
+      localStorage.setItem('signed', 'true');
+  
+      const expirationTime = new Date().setHours(new Date().getHours() + 8);
+      localStorage.setItem('expirationTime', String(expirationTime));
+  
+      history.push('/home');
+    } catch (error) {      
       Swal.fire({
-        icon: 'error',
-        title: 'Atenção!',
-        text: 'Ocorreu um erro ao tentar alterar a senha!'
+        icon: "error",
+        title: "Atenção!",
+        text: translate(error.message)
       });
     }
   }
@@ -122,17 +140,29 @@ const RenewPassword = (): JSX.Element => {
       <div className="v-height">
         <div className={classes.login}>
           <Typography variant="h3" component="h3" gutterBottom>
-            Recuperação de senha
+            Nova senha
           </Typography>
           <form onSubmit={handleSubmit} className={classes.formLogin}>
             <FormControl>
               <TextField 
+                type="text"
                 variant="outlined"
-                label="Código"
-                fullWidth
+                label="Nome"
                 required
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
+                fullWidth
+                onChange={(event) => setName(event.target.value)}
+                value={name}
+              />
+            </FormControl>
+            <FormControl>
+              <TextField 
+                type="text"
+                variant="outlined"
+                label="Sobrenome"
+                required
+                fullWidth
+                onChange={(event) => setFamilyName(event.target.value)}
+                value={familyName}
               />
             </FormControl>
             <FormControl>
@@ -140,10 +170,10 @@ const RenewPassword = (): JSX.Element => {
                 type="password"
                 variant="outlined"
                 label="Nova senha"
-                fullWidth
                 required
+                fullWidth
+                onChange={(event) => setPassword(event.target.value)}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -151,10 +181,10 @@ const RenewPassword = (): JSX.Element => {
                 type="password"
                 variant="outlined"
                 label="Confirmação de senha"
-                fullWidth
                 required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                fullWidth
+                onChange={(event) => setNewPassword(event.target.value)}
+                value={newPassword}
               />
             </FormControl>
             <FormControl>
@@ -162,7 +192,7 @@ const RenewPassword = (): JSX.Element => {
                 className={classes.button}
                 type="submit"
               >
-                Alterar senha
+                Salvar
               </Button>
             </FormControl>
           </form>
@@ -172,4 +202,4 @@ const RenewPassword = (): JSX.Element => {
   )
 }
 
-export default RenewPassword;
+export default ConfirmNewPassword;

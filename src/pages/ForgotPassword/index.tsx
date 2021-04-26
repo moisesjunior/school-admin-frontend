@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { FormEvent, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import '../../assets/global.css'
 import { Button, FormControl, TextField, Typography } from '@material-ui/core';
 import logo from '../../assets/logo.png'
 import { useHistory } from 'react-router';
+import { Auth } from 'aws-amplify';
+import Swal from 'sweetalert2';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,10 +60,26 @@ const useStyles = makeStyles((theme) => ({
 const ForgotPassword = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
+  const [ username, setUsername ] = useState('');
   
-  
-  const handleSubmit = () => {
-    history.push('/renewPassword');
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      await Auth.forgotPassword(username);
+      history.push({
+        pathname: '/renewPassword',
+        state: {
+          username
+        }
+      }); 
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Atenção!',
+        text: 'Ocorreu um erro ao solicitar o reset de senha.'
+      })
+    }
   }
 
   return (
@@ -96,6 +114,9 @@ const ForgotPassword = (): JSX.Element => {
                 style={{
                   marginTop: "10%"
                 }} 
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </FormControl>
             <FormControl>

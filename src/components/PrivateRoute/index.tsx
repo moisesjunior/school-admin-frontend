@@ -8,7 +8,8 @@ const renewOrExpire = async (hours: number): Promise<boolean> => {
   if(new Date().getTime() >= Number(expirationTime)){
     localStorage.clear();
     UIStore.replace({
-      signed: false
+      signed: false,
+      name: ""
     });
     window.location.replace('/');
     return false;
