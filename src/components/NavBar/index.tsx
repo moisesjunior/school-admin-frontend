@@ -30,6 +30,7 @@ interface ListItemLinkProps {
   icon: React.ReactElement;
   primary: string;
   to: string;
+  handle: () => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -122,9 +123,9 @@ const NavBar = () => {
     const renderLink = React.useMemo(
       () =>
         React.forwardRef<any, Omit<RouterLinkProps, 'to'>>((itemProps, ref) => (
-          <RouterLink activeClassName={classes.active}  to={to} ref={ref} {...itemProps} />
+          <RouterLink onClick={props.handle} activeClassName={classes.active}  to={to} ref={ref} {...itemProps} />
         )),
-      [to],
+      [to, props.handle],
     );
   
     return (
@@ -212,6 +213,7 @@ const NavBar = () => {
           }}
         >
           <ListItemLink 
+            handle={handleDrawerClose}
             icon={
               <HomeIcon 
                 classes={{
@@ -223,6 +225,7 @@ const NavBar = () => {
             primary="Página Inicial"
           />
           <ListItemLink 
+            handle={handleDrawerClose}
             icon={
               <AccountCircleIcon
                 classes={{
@@ -234,6 +237,7 @@ const NavBar = () => {
             primary="Alunos"
           />
           <ListItemLink
+            handle={handleDrawerClose}
             icon={
               <SchoolIcon
                 classes={{
@@ -245,6 +249,7 @@ const NavBar = () => {
             primary="Cursos"
           />
           <ListItemLink 
+            handle={handleDrawerClose}
             icon={
               <AttachMoneyIcon
                 classes={{
@@ -255,7 +260,8 @@ const NavBar = () => {
             to="payments" 
             primary="Pagamentos"
           />
-          <ListItemLink 
+          <ListItemLink
+            handle={handleDrawerClose} 
             icon={
               <MoneyOffIcon
                 classes={{

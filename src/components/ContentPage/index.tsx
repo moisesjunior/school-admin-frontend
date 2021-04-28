@@ -7,13 +7,14 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       padding: theme.spacing(3),
       margin: "90px 30px 0 90px",
-      backgroundColor: "#FFFFFF"
+      backgroundColor: "#FFFFFF",
+      borderRadius: "10px"
     }
   })
 );
 
 interface ContentPageDTO {
-  children: JSX.Element[];
+  children: JSX.Element[] | JSX.Element;
 }
 
 export default function ContentPage(props: ContentPageDTO) {
