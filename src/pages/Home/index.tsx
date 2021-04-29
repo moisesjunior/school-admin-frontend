@@ -1,24 +1,29 @@
 import React from 'react';
 import ContentPage from '../../components/ContentPage'
-import Card from '@material-ui/core/Card';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+// import Card from '@material-ui/core/Card';
+// import { createStyles, makeStyles, Theme } from '@material-ui/core';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    cards: {
-      display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",  
-    }
-  })
-);
+// const useStyles = makeStyles((theme: Theme) =>
+//   createStyles({
+//     cards: {
+//       display: "grid",
+//       gridTemplateColumns: "repeat(3, 1fr)",  
+//     }
+//   })
+// );
 
 const Home = (): JSX.Element => {
-  const classes = useStyles();
+  // const classes = useStyles();
 
   return (
     <ContentPage>
       <h2>Dashboard</h2>
-      <div className={classes.cards}>
+      <h1
+        style={{
+          textAlign: 'center'
+        }}
+      >EM DESENVOLVIMENTO...</h1>
+      {/* <div className={classes.cards}>
         <Card>
           <span>TESTE</span>
         </Card>
@@ -28,7 +33,7 @@ const Home = (): JSX.Element => {
         <Card>
           <span>TESTE</span>
         </Card>        
-      </div>
+      </div> */}
     </ContentPage>
   )
 }
