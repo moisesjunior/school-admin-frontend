@@ -29,10 +29,11 @@ const ClassAtCourses = (): JSX.Element => {
         options={
           [{
             type: "link",
-            link: `/customer`,
+            link: `/student`,
             title: "Visualizar",
             handle: () => {},
-            icon: <VisibilityIcon />
+            icon: <VisibilityIcon />,
+            action: 'view'
           }]
         }
       />
