@@ -91,7 +91,7 @@ interface HeadCell {
   id: string;
   label: string;
   numeric: boolean;
-  type?: "date" | "money" | "text" | "cpf"
+  type?: "date" | "money" | "text" | "cpf";
 }
 
 interface EnhancedTableProps {
@@ -99,7 +99,7 @@ interface EnhancedTableProps {
   onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
   order: Order;
   orderBy: string;
-  headCells: HeadCell[]
+  headCells: HeadCell[];
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -230,6 +230,7 @@ interface OptionsProp {
   link?: string;
   title: string;
   icon: JSX.Element;
+  action?: "view" | "edit"
 }
 
 interface TableProps {
@@ -315,7 +316,7 @@ export default function EnhancedTable(props: TableProps) {
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
+              { rows.length > 0 && stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   return (
@@ -373,7 +374,10 @@ export default function EnhancedTable(props: TableProps) {
                                     if(option.type === 'button' && option.handle !== undefined){
                                       return (
                                         <StyledMenuItem
-                                          onClick={() => option.handle(row.id as string)}
+                                          onClick={() => {
+                                            handleClose();
+                                            option.handle(row.id as string);
+                                          }}
                                         >
                                           <ListItemIcon>
                                             {option.icon}
@@ -388,7 +392,9 @@ export default function EnhancedTable(props: TableProps) {
                                         <NavLink to={{
                                           pathname: option.link,
                                           state: {
-                                            id: row.id
+                                            id: row.id,
+                                            action: option.action,
+                                            name: ( props.name === 'Cursos' ? row.description : undefined)
                                           }
                                         }}
                                         className={classes.link}
