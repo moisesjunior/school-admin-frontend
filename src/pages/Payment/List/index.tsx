@@ -54,14 +54,16 @@ const ListPayment = (): JSX.Element => {
               link: "/payment",
               title: "Visualizar",
               handle: () => {},
-              icon: <VisibilityIcon />
+              icon: <VisibilityIcon />,
+              action: 'view',
             },
             {
               type: "link",
               link: "/payment",
               title: "Editar",
               handle: () => {},
-              icon: <CreateIcon />
+              icon: <CreateIcon />,
+              action: 'edit',
             },
             {
               type: "button",
