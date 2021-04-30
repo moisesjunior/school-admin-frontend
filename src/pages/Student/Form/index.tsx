@@ -272,8 +272,8 @@ const FormStudent = (): JSX.Element => {
               disabled={action !== "view" ? false : true}
               variant="outlined" 
               type="email"
-              required
               label="Email" 
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)} 
             />
@@ -281,9 +281,9 @@ const FormStudent = (): JSX.Element => {
           <FormControl>
             <TextField 
               disabled={action !== "view" ? false : true}
-              required 
               variant="outlined" 
               label="Celular" 
+              required
               value={mobilePhone}
               onChange={(e) => setMobilePhone(e.target.value)} 
             />
@@ -310,7 +310,6 @@ const FormStudent = (): JSX.Element => {
                 setBirthdate(value)
               }}
               format="dd/MM/yyyy"
-              required
             />
           </MuiPickersUtilsProvider>
         </FormControl>
@@ -318,13 +317,12 @@ const FormStudent = (): JSX.Element => {
           <TextField 
             disabled={action !== "view" ? false : true}
             variant="outlined" 
-            required
             label="Nacionalidade" 
             value={nationality}
             onChange={(e) => setNationality(e.target.value)} 
           />
         </FormControl>
-        <FormControl required variant="outlined">
+        <FormControl variant="outlined">
           <InputLabel>Estado Civil</InputLabel>
           <Select
             disabled={action !== "view" ? false : true}
@@ -344,7 +342,6 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="RG" 
-            required
             value={rg}
             onChange={(e) => setRg(e.target.value)} 
           />
@@ -354,7 +351,6 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="Emissor" 
-            required
             value={emitter}
             onChange={(e) => setEmitter(e.target.value)} 
           />
@@ -365,7 +361,6 @@ const FormStudent = (): JSX.Element => {
               disabled={action !== "view" ? false : true}
               inputVariant="outlined"
               openTo="year"
-              required
               label="Data de emissão"
               views={['year', 'month', 'date']}
               value={emissionDate}
