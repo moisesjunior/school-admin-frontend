@@ -121,6 +121,7 @@ const FormStudent = (): JSX.Element => {
   const [ whichMedication, setWhichMedication ] = useState('');
 
   useEffect(() => {
+    console.log(location.state);
     const result = async () => {
       const responseCourses = await api.get('/course');
       setCourses(responseCourses.data);
@@ -167,7 +168,7 @@ const FormStudent = (): JSX.Element => {
     }
 
     result();
-  }, []);
+  }, [location.state]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()

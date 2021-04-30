@@ -245,6 +245,8 @@ interface TableProps {
 
 export default function EnhancedTable(props: TableProps) {
   const classes = useStyles();
+  const [ id, setId ] = useState('');
+  const [ description, setDescription ] = useState('');
   const [ order, setOrder ] = useState<Order>('asc');
   const [ orderBy, setOrderBy ] = useState<string>('calories');
   const [ page, setPage ] = useState(0);
@@ -266,7 +268,7 @@ export default function EnhancedTable(props: TableProps) {
     }
     
     result();
-  }, [props.url]);
+  }, []);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -285,12 +287,19 @@ export default function EnhancedTable(props: TableProps) {
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>, id: string, description?: string) => {
     setAnchorEl(event.currentTarget);
+    setId(id);
+
+    if(description !== undefined){
+      setDescription(description)
+    }
   };
 
   const handleClose = () => {
     setAnchorEl(null);
+    setId('');
+    setDescription('');
   };
 
   return (
@@ -330,7 +339,7 @@ export default function EnhancedTable(props: TableProps) {
                       </TableCell>
                       {
                         props.headCells.map(headCell => {
-                          if(headCell.id !== 'options'){
+                          if(headCell.id !== 'options'){                            
                             return (
                               <TableCell>
                                 {headCell.type === "cpf" && 
@@ -354,7 +363,8 @@ export default function EnhancedTable(props: TableProps) {
                                 }                                
                               </TableCell>
                             )
-                          } else {
+                          } else {                      
+                            const needDescription = props.name === 'Cursos' ? row.description as string : undefined;
                             return (
                               <TableCell>
                                 <Button
@@ -363,7 +373,7 @@ export default function EnhancedTable(props: TableProps) {
                                   classes={{
                                     root: classes.button
                                   }}
-                                  onClick={handleClick}
+                                  onClick={(e) => handleClick(e, row.id as string, needDescription)}
                                 >
                                   Ações
                                 </Button>
@@ -375,12 +385,13 @@ export default function EnhancedTable(props: TableProps) {
                                   onClose={handleClose}
                                 >
                                   {props.options.map(option => {
+                                    
                                     if(option.type === 'button' && option.handle !== undefined){
                                       return (
                                         <StyledMenuItem
                                           onClick={() => {
                                             handleClose();
-                                            option.handle(row.id as string);
+                                            option.handle(id as string);
                                           }}
                                         >
                                           <ListItemIcon>
@@ -396,9 +407,9 @@ export default function EnhancedTable(props: TableProps) {
                                         <NavLink to={{
                                           pathname: option.link,
                                           state: {
-                                            id: row.id,
+                                            id: id,
                                             action: option.action,
-                                            name: ( props.name === 'Cursos' ? row.description : undefined)
+                                            name: description
                                           }
                                         }}
                                         className={classes.link}
