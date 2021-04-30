@@ -203,8 +203,14 @@ const FormExpenditure = (): JSX.Element => {
             value={expenditureType}
             onChange={(e) => setExpenditureType(e.target.value as string)}
           >
+            <MenuItem value=""><em>None</em></MenuItem>
             <MenuItem value="FIXA">Fixa</MenuItem>
             <MenuItem value="VARIÁVEL">Variável</MenuItem>
+            <MenuItem value="DEISE PARTICULAR">Deise Particular</MenuItem>
+            <MenuItem value="JULIO PARTICULAR">Júlio Particular</MenuItem>
+            <MenuItem value="SD">SD</MenuItem>
+            <MenuItem value="Identificação">Identificação</MenuItem>
+            <MenuItem value="Financeira">Financeira</MenuItem>
           </Select>
         </FormControl>
         <FormControl>

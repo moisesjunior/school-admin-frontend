@@ -108,7 +108,6 @@ const FormPayment = (): JSX.Element => {
         setId(location.state.id);
         setAction(location.state.action);
         const response = await api.get(`/payment/${location.state.id}`);
-        console.log(response.data)
         setDescription(response.data.description);
         setDueDateFormat(new Date(response.data.dueDate));
         setValue(Number(response.data.value));
@@ -222,6 +221,7 @@ const FormPayment = (): JSX.Element => {
             required={generateAssasPayment ? true : false}
             onChange={(e) => setCustomer(e.target.value as string)}
           >
+            <MenuItem value=""><em>None</em></MenuItem>
             { customers.map((customer: Customer) => (
               <MenuItem value={customer.id}>{customer.name}</MenuItem>
             ))}
@@ -239,7 +239,6 @@ const FormPayment = (): JSX.Element => {
               views={['year', 'month', 'date']}
               value={dueDateFormat}
               onChange={(value) => {
-                console.log(value?.toLocaleString())
                 setDueDateFormat(value)
               }}
               format="dd/MM/yyyy"
