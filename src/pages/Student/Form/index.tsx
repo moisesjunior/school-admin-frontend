@@ -25,16 +25,36 @@ interface Course {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({   
     personalInfo: {
-      display: 'grid'
+      display: 'grid',
+      gridTemplateColumns: 'repeat(4, 1fr)',
+      gridGap: '10px',
+      '@media screen and (max-width: 900px)': {
+        gridTemplateColumns: 'repeat(1, 1fr)',
+      }
     },
     addressInfo: {
-      display: 'grid'
+      gridGap: '10px',
+      gridTemplateColumns: 'repeat(4, 1fr)',
+      display: 'grid',
+      '@media screen and (max-width: 900px)': {
+        gridTemplateColumns: 'repeat(1, 1fr)',
+      }
     },
     familyInfo: {
-      display: 'grid'
+      gridTemplateColumns: 'repeat(1, 1fr)',
+      gridGap: '10px',
+      display: 'grid',
+      '@media screen and (max-width: 900px)': {
+        gridTemplateColumns: 'repeat(1, 1fr)',
+      }
     },
     medicalInfo: {
-      display: 'grid'
+      gridTemplateColumns: 'repeat(4, 1fr)',
+      gridGap: '10px',
+      display: 'grid',
+      '@media screen and (max-width: 900px)': {
+        gridTemplateColumns: 'repeat(1, 1fr)',
+      }
     },
     span: {
       padding: "15px",
@@ -127,7 +147,9 @@ const FormStudent = (): JSX.Element => {
         setWhichSchool(response.data.whichSchool)
         setWhichYear(response.data.whichYear)
         setWhichCity(response.data.whichCity)
-        setCourse(response.data.course.id)
+        if(response.data.course !== null){
+          setCourse(response.data.course.id)
+        }
         setAddress(response.data.address)
         setAddressNumber(Number(response.data.addressNumber));
         setComplement(response.data.complement)
@@ -287,6 +309,7 @@ const FormStudent = (): JSX.Element => {
                 setBirthdate(value)
               }}
               format="dd/MM/yyyy"
+              required
             />
           </MuiPickersUtilsProvider>
         </FormControl>
@@ -294,12 +317,13 @@ const FormStudent = (): JSX.Element => {
           <TextField 
             disabled={action !== "view" ? false : true}
             variant="outlined" 
+            required
             label="Nacionalidade" 
             value={nationality}
             onChange={(e) => setNationality(e.target.value)} 
           />
         </FormControl>
-        <FormControl variant="outlined">
+        <FormControl required variant="outlined">
           <InputLabel>Estado Civil</InputLabel>
           <Select
             disabled={action !== "view" ? false : true}
@@ -319,6 +343,7 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="RG" 
+            required
             value={rg}
             onChange={(e) => setRg(e.target.value)} 
           />
@@ -328,6 +353,7 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="Emissor" 
+            required
             value={emitter}
             onChange={(e) => setEmitter(e.target.value)} 
           />
@@ -338,6 +364,7 @@ const FormStudent = (): JSX.Element => {
               disabled={action !== "view" ? false : true}
               inputVariant="outlined"
               openTo="year"
+              required
               label="Data de emissão"
               views={['year', 'month', 'date']}
               value={emissionDate}
@@ -408,7 +435,7 @@ const FormStudent = (): JSX.Element => {
             onChange={(e) => setWhichCity(e.target.value)} 
           />
         </FormControl>
-        <FormControl required variant="outlined">
+        <FormControl variant="outlined">
           <InputLabel>Curso</InputLabel>
           <Select
             disabled={action !== "view" ? false : true}
@@ -429,7 +456,6 @@ const FormStudent = (): JSX.Element => {
         <FormControl>
           <TextField 
             disabled={action !== "view" ? false : true}
-            required
             variant="outlined" 
             label="CEP" 
             value={postalCode}
@@ -440,7 +466,6 @@ const FormStudent = (): JSX.Element => {
           <TextField 
             disabled={action !== "view" ? false : true}
             variant="outlined" 
-            required
             label="Rua" 
             value={address}
             onChange={(e) => setAddress(e.target.value)} 
@@ -451,7 +476,6 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="Número" 
-            required
             value={addressNumber}
             onChange={(e) => setAddressNumber(Number(e.target.value))} 
           />
@@ -469,7 +493,6 @@ const FormStudent = (): JSX.Element => {
           <TextField 
             disabled={action !== "view" ? false : true}
             variant="outlined" 
-            required
             label="Bairro" 
             value={province}
             onChange={(e) => setProvince(e.target.value)} 
@@ -479,7 +502,6 @@ const FormStudent = (): JSX.Element => {
           <TextField 
             disabled={action !== "view" ? false : true}
             variant="outlined" 
-            required
             label="Cidade" 
             value={city}
             onChange={(e) => setCity(e.target.value)} 
@@ -489,7 +511,6 @@ const FormStudent = (): JSX.Element => {
           <TextField 
             disabled={action !== "view" ? false : true}
             variant="outlined" 
-            required
             label="Estado" 
             value={state}
             onChange={(e) => setState(e.target.value)} 
