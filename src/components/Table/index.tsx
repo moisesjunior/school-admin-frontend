@@ -338,7 +338,7 @@ export default function EnhancedTable(props: TableProps) {
                                 }
 
                                 {headCell.type === "date" && 
-                                  format(new Date(row[headCell.id]), "dd/MM/yyyy")
+                                  row[headCell.id] !== null ? format(new Date(row[headCell.id]), "dd/MM/yyyy") : ""
                                 }
 
                                 {headCell.type === "dateReference" && 
@@ -350,7 +350,7 @@ export default function EnhancedTable(props: TableProps) {
                                 }
 
                                 {headCell.type === "text" && 
-                                  (typeof row[headCell.id] === "object" && row[headCell.id] !== null ? (row[headCell.id] as any).name: (row[headCell.id] === null ? "CLIENTE NÃO INFORMADO" : row[headCell.id]))
+                                  (typeof row[headCell.id] === "object" && row[headCell.id] !== null ? (row[headCell.id] as any).name: (row[headCell.id] === null ? "" : row[headCell.id]))
                                 }                                
                               </TableCell>
                             )
