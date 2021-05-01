@@ -90,7 +90,7 @@ const FormStudent = (): JSX.Element => {
   const [ birthdate, setBirthdate ] = useState<Date | null>(null);
   const [ nationality, setNationality ] = useState('');
   const [ maritalStatus, setMaritalStatus ] = useState('');
-  const [ rg, setRg ] = useState('');
+  const [ rg, setRg ] = useState<string | null>(null);
   const [ emitter, setEmitter ] = useState('');
   const [ emissionDate, setEmissionDate ] = useState<Date | null>(null);
   const [ voterRegistration, setVoterRegistration ] = useState('');
@@ -99,7 +99,7 @@ const FormStudent = (): JSX.Element => {
   const [ whichSchool, setWhichSchool ] = useState('');
   const [ whichYear, setWhichYear ] = useState('');
   const [ whichCity, setWhichCity ] = useState('');
-  const [ course, setCourse ] = useState('');
+  const [ course, setCourse ] = useState<string | null>(null);
 
   // Endereço
   const [ address, setAddress ] = useState('');
