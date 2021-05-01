@@ -91,7 +91,7 @@ interface HeadCell {
   id: string;
   label: string;
   numeric: boolean;
-  type?: "date" | "money" | "text" | "cpf" | "dateReference";
+  type?: "date" | "money" | "text" | "cpf" | "dateReference" | "dueDate";
 }
 
 interface EnhancedTableProps {
@@ -348,6 +348,10 @@ export default function EnhancedTable(props: TableProps) {
 
                                 {headCell.type === "date" && 
                                   row[headCell.id] !== null ? format(new Date(row[headCell.id]), "dd/MM/yyyy") : ""
+                                }
+
+                                {headCell.type === "dueDate" && 
+                                  row[headCell.id] !== null ? format(new Date(`${row[headCell.id]} 00:00:00`), "dd/MM/yyyy") : ""
                                 }
 
                                 {headCell.type === "dateReference" && 
