@@ -8,6 +8,7 @@ import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/picker
 import DateFnsUtils from '@date-io/date-fns';
 import SaveIcon from '@material-ui/icons/Save';
 import BackIcon from '@material-ui/icons/ArrowBack';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 interface Discount {
   value: number
@@ -70,15 +71,21 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+interface Customer {
+  id: string;
+  name: string;
+}
+
 const FormPayment = (): JSX.Element => {
   const location = useLocation<State>();
   const history = useHistory();
   const classes = useStyles();
-  const [ customers, setCustomers ] = useState([]);
+  const [ customers, setCustomers ] = useState<Customer[]>([]);
 
   const [ id, setId ] = useState('');
   const [ action, setAction ] = useState('');
-  const [ customer, setCustomer ] = useState<string | null>(null);
+  const [ customerDisabled, setCustomerDisabled ] = useState(false);
+  const [ customer, setCustomer ] = useState<Customer | null>(null);
   const [ generateAssasPayment, setGenerateAssasPayment] = useState(false);
   const [ type, setType ] = useState('');
   const [ status, setStatus ] = useState('PENDING');
@@ -100,6 +107,7 @@ const FormPayment = (): JSX.Element => {
 
   useEffect(() => {
     const result = async () => {
+      console.log(new Date('2021-05-10 00:00:00'))
       const response = await api.get('customer');
 
       setCustomers(response.data);
@@ -107,11 +115,13 @@ const FormPayment = (): JSX.Element => {
       if(location.state !== undefined && location.state !== null){
         setId(location.state.id);
         setAction(location.state.action);
+
         const response = await api.get(`/payment/${location.state.id}`);
         setDescription(response.data.description);
-        setDueDateFormat(new Date(response.data.dueDate));
+        setDueDateFormat(new Date(`${response.data.dueDate} 00:00:00`));
         setValue(Number(response.data.value));
         setGenerateAssasPayment(response.data.generateAssasPayment);
+        setCustomerDisabled(true);
         setType(response.data.type);
         setStatus(response.data.status);
         setBillingType(response.data.billingType);
@@ -119,13 +129,13 @@ const FormPayment = (): JSX.Element => {
         setInterest(response.data.interest);
         setFine(response.data.fine);
         if(response.data.customer !== null){
-          setCustomer(response.data.customer.id);
+          setCustomer(response.data.customer);
         }
       }
     }
 
     result();
-  }, []);
+  }, [location.state]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -155,15 +165,11 @@ const FormPayment = (): JSX.Element => {
           allowEscapeKey: false,
           allowOutsideClick: false,
           allowEnterKey: false,
+          showConfirmButton: false,
           showCancelButton: true,
-          confirmButtonText: "Cadastrar outro!",
           cancelButtonText: "Voltar"
         }).then(result => {
-          if(result.isConfirmed){
-            window.location.reload(false);
-          } else {
-            history.push('/payments');
-          }
+          history.push('/payments');
         });
   
       } else {
@@ -189,14 +195,10 @@ const FormPayment = (): JSX.Element => {
           allowOutsideClick: false,
           allowEnterKey: false,
           showCancelButton: true,
-          confirmButtonText: "Cadastrar outro!",
+          showConfirmButton: false,
           cancelButtonText: "Voltar"
         }).then(result => {
-          if(result.isConfirmed){
-            window.location.reload(false);
-          } else {
-            history.push('/payments');
-          }
+          history.push('/payments');
         });
       } 
     } catch (error) {
@@ -213,19 +215,15 @@ const FormPayment = (): JSX.Element => {
       <h2>Formulário - Pagamento</h2>
       <form className={classes.form} onSubmit={handleSubmit}>
         <FormControl variant="outlined">
-          <InputLabel>Cliente</InputLabel>
-          <Select
+          <Autocomplete
+            fullWidth
             disabled={action !== "view" ? false : true}
-            label="Curso"
             value={customer}
-            required={generateAssasPayment ? true : false}
-            onChange={(e) => setCustomer(e.target.value as string)}
-          >
-            <MenuItem value=""><em>None</em></MenuItem>
-            { customers.map((customer: Customer) => (
-              <MenuItem value={customer.id}>{customer.name}</MenuItem>
-            ))}
-          </Select>
+            onChange={(event, value) => setCustomer(value !== null ? value : null)}
+            options={customers}
+            getOptionLabel={(option) => option.name}
+            renderInput={(params) => <TextField {...params} required={generateAssasPayment ? true : false} label="Selecione o cliente..." variant="outlined" />}
+          />
         </FormControl>
         <FormControl>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -285,7 +283,7 @@ const FormPayment = (): JSX.Element => {
         <FormControlLabel
           control={
             <Checkbox 
-              disabled={action !== "view" ? false : true}
+              disabled={action === "view" ? true : customerDisabled}
               color="primary" 
               checked={generateAssasPayment}
               onChange={(e) => setGenerateAssasPayment(e.target.checked)}

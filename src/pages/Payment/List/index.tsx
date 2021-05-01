@@ -10,26 +10,42 @@ import Swal from 'sweetalert2';
 
 const ListPayment = (): JSX.Element => {
   const handleDelete = async (id?: string) => {
-    try{
-      const currentSession = await Auth.currentSession();
-      await api.delete(`/payment/${id}`, {
-        headers: {
-          'X-Cognito-ID-Token': currentSession.getIdToken().getJwtToken()
-        }
-      });
+    const currentSession = await Auth.currentSession();
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Sucesso!',
-        text: 'O cliente foi excluído com sucesso!'
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: error.response.data.title,
-        text: error.response.data.text,
-      });
-    }
+    Swal.fire({
+      icon: 'question',
+      title: 'Atenção!',
+      text: 'Deseja realmente excluir o pagamento selecionado?',
+      showCancelButton: true,
+      confirmButtonText: "Sim, confirmar!",
+      cancelButtonText: "Não!"
+    }).then( async (result) => {
+      if(result.isConfirmed){
+        try{
+          await api.delete(`/payment/${id}`, {
+            headers: {
+              'X-Cognito-ID-Token': currentSession.getIdToken().getJwtToken()
+            }
+          });
+    
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso!',
+            text: 'O pagamento foi excluído com sucesso!'
+          }).then(result => {
+            window.location.reload(false);
+          });
+        } catch(error) {
+          Swal.fire({
+            icon: 'error',
+            title: error.response.data.title,
+            text: error.response.data.text,
+          });
+        }
+      } else {
+        Swal.close();
+      }
+    });
   }
   
   return (
@@ -43,7 +59,7 @@ const ListPayment = (): JSX.Element => {
           {id: "customer", disablePadding: true, label: "Cliente", numeric: false, type: "text" },
           {id: "description", disablePadding: true, label: "Descrição", numeric: false, type: "text" },
           {id: "type", disablePadding: true, label: "Tipo", numeric: false, type: "text" },
-          {id: "dueDate", disablePadding: true, label: "Vencimento", numeric: false, type: "date" },          
+          {id: "dueDate", disablePadding: true, label: "Vencimento", numeric: false, type: "dueDate" },          
           {id: "options", disablePadding: true, label: "", numeric: false }
         ]}
         emptyMessage="Nenhum pagamento cadastrado!"
