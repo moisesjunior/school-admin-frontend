@@ -90,7 +90,7 @@ const FormStudent = (): JSX.Element => {
   const [ birthdate, setBirthdate ] = useState<Date | null>(null);
   const [ nationality, setNationality ] = useState('');
   const [ maritalStatus, setMaritalStatus ] = useState('');
-  const [ rg, setRg ] = useState('');
+  const [ rg, setRg ] = useState<string | null>(null);
   const [ emitter, setEmitter ] = useState('');
   const [ emissionDate, setEmissionDate ] = useState<Date | null>(null);
   const [ voterRegistration, setVoterRegistration ] = useState('');
@@ -99,7 +99,7 @@ const FormStudent = (): JSX.Element => {
   const [ whichSchool, setWhichSchool ] = useState('');
   const [ whichYear, setWhichYear ] = useState('');
   const [ whichCity, setWhichCity ] = useState('');
-  const [ course, setCourse ] = useState('');
+  const [ course, setCourse ] = useState<string | null>(null);
 
   // Endereço
   const [ address, setAddress ] = useState('');
@@ -121,6 +121,7 @@ const FormStudent = (): JSX.Element => {
   const [ whichMedication, setWhichMedication ] = useState('');
 
   useEffect(() => {
+    console.log(location.state);
     const result = async () => {
       const responseCourses = await api.get('/course');
       setCourses(responseCourses.data);
@@ -167,7 +168,7 @@ const FormStudent = (): JSX.Element => {
     }
 
     result();
-  }, []);
+  }, [location.state]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -271,8 +272,8 @@ const FormStudent = (): JSX.Element => {
               disabled={action !== "view" ? false : true}
               variant="outlined" 
               type="email"
-              required
               label="Email" 
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)} 
             />
@@ -280,9 +281,9 @@ const FormStudent = (): JSX.Element => {
           <FormControl>
             <TextField 
               disabled={action !== "view" ? false : true}
-              required 
               variant="outlined" 
               label="Celular" 
+              required
               value={mobilePhone}
               onChange={(e) => setMobilePhone(e.target.value)} 
             />
@@ -309,7 +310,6 @@ const FormStudent = (): JSX.Element => {
                 setBirthdate(value)
               }}
               format="dd/MM/yyyy"
-              required
             />
           </MuiPickersUtilsProvider>
         </FormControl>
@@ -317,13 +317,12 @@ const FormStudent = (): JSX.Element => {
           <TextField 
             disabled={action !== "view" ? false : true}
             variant="outlined" 
-            required
             label="Nacionalidade" 
             value={nationality}
             onChange={(e) => setNationality(e.target.value)} 
           />
         </FormControl>
-        <FormControl required variant="outlined">
+        <FormControl variant="outlined">
           <InputLabel>Estado Civil</InputLabel>
           <Select
             disabled={action !== "view" ? false : true}
@@ -343,7 +342,6 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="RG" 
-            required
             value={rg}
             onChange={(e) => setRg(e.target.value)} 
           />
@@ -353,7 +351,6 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="Emissor" 
-            required
             value={emitter}
             onChange={(e) => setEmitter(e.target.value)} 
           />
@@ -364,7 +361,6 @@ const FormStudent = (): JSX.Element => {
               disabled={action !== "view" ? false : true}
               inputVariant="outlined"
               openTo="year"
-              required
               label="Data de emissão"
               views={['year', 'month', 'date']}
               value={emissionDate}
