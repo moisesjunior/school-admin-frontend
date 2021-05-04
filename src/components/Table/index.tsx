@@ -256,11 +256,11 @@ export default function EnhancedTable(props: TableProps) {
 
   useEffect(() => {
     const result = async () => {
-      const currentUser = await Auth.currentSession();
+      const currentSession = await Auth.currentSession();
 
       const response = await api.get(props.url, {
         headers: {
-          'Cognito-ID-Token': currentUser.getIdToken().getJwtToken()
+          'CognitoIdToken': currentSession.getIdToken().getJwtToken()
         }
       });
 

@@ -9,6 +9,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import SaveIcon from '@material-ui/icons/Save';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Auth from '@aws-amplify/auth';
 
 interface Discount {
   value: number
@@ -107,8 +108,12 @@ const FormPayment = (): JSX.Element => {
 
   useEffect(() => {
     const result = async () => {
-      console.log(new Date('2021-05-10 00:00:00'))
-      const response = await api.get('customer');
+      const currentSession = await Auth.currentSession();
+      const response = await api.get('customer', {
+        headers: {
+          'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+        }
+      });
 
       setCustomers(response.data);
 
@@ -116,7 +121,11 @@ const FormPayment = (): JSX.Element => {
         setId(location.state.id);
         setAction(location.state.action);
 
-        const response = await api.get(`/payment/${location.state.id}`);
+        const response = await api.get(`/payment/${location.state.id}`, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
+        });
         setDescription(response.data.description);
         setDueDateFormat(new Date(`${response.data.dueDate} 00:00:00`));
         setValue(Number(response.data.value));
@@ -143,6 +152,7 @@ const FormPayment = (): JSX.Element => {
     const dueDate = dueDateFormat?.toISOString().split('T')[0];
 
     try {
+      const currentSession = await Auth.currentSession();
       if(id !== ''){
         await api.put(`/payment/${id}`,{
           customer,
@@ -156,6 +166,10 @@ const FormPayment = (): JSX.Element => {
           discount,
           interest,
           fine
+        }, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
         });
   
         Swal.fire({
@@ -185,6 +199,10 @@ const FormPayment = (): JSX.Element => {
           discount,
           interest,
           fine
+        }, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
         });
   
         Swal.fire({

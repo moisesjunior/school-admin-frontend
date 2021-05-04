@@ -24,7 +24,7 @@ const ListStudent = (): JSX.Element => {
         try{
           await api.delete(`/customer/${id}`, {
             headers: {
-              'X-Cognito-ID-Token': currentSession.getIdToken().getJwtToken()
+              'CognitoIdToken': currentSession.getIdToken().getJwtToken()
             }
           });
     

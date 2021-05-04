@@ -13,6 +13,7 @@ import {
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import NumberFormat from 'react-number-format';
+import { Auth } from 'aws-amplify';
 
 interface State {
   id: string;
@@ -99,7 +100,12 @@ const FormCourse = (): JSX.Element => {
       setAction(location.state.action);
 
       const result = async () => {
-        const response = await api.get(`/course/${location.state.id}`);
+        const currentSession = await Auth.currentSession();
+        const response = await api.get(`/course/${location.state.id}`, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
+        });
         setDescription(response.data.description);
         setStartAt(response.data.startAt);
         setEndAt(response.data.endAt);
@@ -123,12 +129,17 @@ const FormCourse = (): JSX.Element => {
       return;
     }
     try {
+      const currentSession = await Auth.currentSession();
       if(id !== ''){
         await api.put(`/course/${id}`,{
           description,
           startAt,
           endAt,
           monthlyPayment
+        }, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
         });
   
         Swal.fire({
@@ -155,6 +166,10 @@ const FormCourse = (): JSX.Element => {
           startAt,
           endAt,
           monthlyPayment
+        }, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
         });
   
         Swal.fire({

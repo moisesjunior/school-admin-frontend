@@ -25,7 +25,7 @@ const ListCourse = (): JSX.Element => {
         try{
           await api.delete(`/course/${id}`, {
             headers: {
-              'X-Cognito-ID-Token': currentSession.getIdToken().getJwtToken()
+              'CognitoIdToken': currentSession.getIdToken().getJwtToken()
             }
           });
     

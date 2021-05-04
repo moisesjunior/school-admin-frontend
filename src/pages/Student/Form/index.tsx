@@ -11,6 +11,10 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 import {
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
+import { Auth } from 'aws-amplify';
+import { maskCPF, maskPhoneNumber, maskCEP } from '../../../utils/mask';
+import { cpf as cpfvalidator } from 'cpf-cnpj-validator';
+import axios from 'axios';
 
 interface State {
   id: string;
@@ -99,6 +103,7 @@ const FormStudent = (): JSX.Element => {
   const [ whichSchool, setWhichSchool ] = useState('');
   const [ whichYear, setWhichYear ] = useState('');
   const [ whichCity, setWhichCity ] = useState('');
+  const [ payment, setPayment ] = useState(0);
   const [ course, setCourse ] = useState<string | null>(null);
 
   // Endereço
@@ -121,49 +126,58 @@ const FormStudent = (): JSX.Element => {
   const [ whichMedication, setWhichMedication ] = useState('');
 
   useEffect(() => {
-    console.log(location.state);
     const result = async () => {
-      const responseCourses = await api.get('/course');
+      const currentSession = await Auth.currentSession();
+      const responseCourses = await api.get('/course', {
+        headers: {
+          'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+        }
+      });
       setCourses(responseCourses.data);
 
       if(location.state !== undefined && location.state !== null){
         setId(location.state.id);
         setAction(location.state.action);
 
-        const response = await api.get(`/customer/${location.state.id}`);
-        setName(response.data.name)
-        setCpf(response.data.cpf)
-        setEmail(response.data.email)
-        setPhoneNumber(response.data.phoneNumber)
-        setMobilePhone(response.data.mobilePhone)
-        setBirthdate(response.data.birthdate)
-        setNationality(response.data.nationality)
-        setMaritalStatus(response.data.maritalStatus)
-        setRg(response.data.rg)
-        setEmitter(response.data.emitter)
-        setEmissionDate(response.data.emissionDate)
-        setVoterRegistration(response.data.voterRegistration)
-        setReservist(Boolean(response.data.reservist))
-        setHighSchool(response.data.highSchool)
-        setWhichSchool(response.data.whichSchool)
-        setWhichYear(response.data.whichYear)
-        setWhichCity(response.data.whichCity)
+        const response = await api.get(`/customer/${location.state.id}`, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
+        });
+        setName(response.data.name);
+        setCpf(response.data.cpf);
+        setEmail(response.data.email);
+        setPhoneNumber(response.data.phoneNumber);
+        setMobilePhone(response.data.mobilePhone);
+        setBirthdate(response.data.birthdate);
+        setNationality(response.data.nationality);
+        setMaritalStatus(response.data.maritalStatus);
+        setRg(response.data.rg);
+        setEmitter(response.data.emitter);
+        setEmissionDate(response.data.emissionDate);
+        setVoterRegistration(response.data.voterRegistration);
+        setReservist(response.data.reservist);
+        setHighSchool(response.data.highSchool);
+        setWhichSchool(response.data.whichSchool);
+        setWhichYear(response.data.whichYear);
+        setWhichCity(response.data.whichCity);
         if(response.data.course !== null){
-          setCourse(response.data.course.id)
+          setCourse(response.data.course.id);
         }
-        setAddress(response.data.address)
+        setAddress(response.data.address);
         setAddressNumber(Number(response.data.addressNumber));
-        setComplement(response.data.complement)
-        setProvince(response.data.province)
-        setCity(response.data.city)
-        setState(response.data.state)
-        setPostalCode(response.data.postalCode)
-        setFatherName(response.data.fatherName)
-        setMotherName(response.data.motherName)
-        setChronicDisease(response.data.chronicDisease)
-        setHepatitis(response.data.hepatitis)
-        setUseMedication(response.data.useMedication)
-        setWhichMedication(response.data.whichMedication)
+        setComplement(response.data.complement);
+        setProvince(response.data.province);
+        setCity(response.data.city);
+        setState(response.data.state);
+        setPostalCode(response.data.postalCode);
+        setFatherName(response.data.fatherName);
+        setMotherName(response.data.motherName);
+        setChronicDisease(response.data.chronicDisease);
+        setHepatitis(response.data.hepatitis);
+        setUseMedication(response.data.useMedication);
+        setWhichMedication(response.data.whichMedication);
+        setPayment(response.data.payment);
       }
     }
 
@@ -173,15 +187,30 @@ const FormStudent = (): JSX.Element => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
+    if(!cpfvalidator.isValid(cpf.replace(/\D/g, ''))){
+      Swal.fire({
+        icon: 'error',
+        title: 'Atenção!',
+        text: 'CPF é inválido!'
+      });
+
+      return;
+    }
+
     try {
+      const currentSession = await Auth.currentSession();
       if(id !== ''){
         await api.put(`/customer/${id}`,{
-          name, cpf, email, phoneNumber, mobilePhone,
+          name, cpf: cpf.replace(/\D/g, ''), email, phoneNumber: phoneNumber.replace(/\D/g, ''), mobilePhone: mobilePhone.replace(/\D/g, ''),
           birthdate, nationality, maritalStatus, address, addressNumber,
           complement, province, city, state, postalCode,
           rg, emitter, emissionDate, voterRegistration, reservist,
           fatherName, motherName, highSchool, whichSchool, whichYear,
-          whichCity, chronicDisease, hepatitis, useMedication, whichMedication, course
+          whichCity, chronicDisease, hepatitis, useMedication, whichMedication, payment, course
+        }, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
         });
   
         Swal.fire({
@@ -204,12 +233,16 @@ const FormStudent = (): JSX.Element => {
   
       } else {
         await api.post('/customer',{
-          name, cpf, email, phoneNumber, mobilePhone,
+          name, cpf: cpf.replace(/\D/g, ''), email, phoneNumber: phoneNumber.replace(/\D/g, ''), mobilePhone: mobilePhone.replace(/\D/g, ''),
           birthdate, nationality, maritalStatus, address, addressNumber,
           complement, province, city, state, postalCode,
           rg, emitter, emissionDate, voterRegistration, reservist,
           fatherName, motherName, highSchool, whichSchool, whichYear,
-          whichCity, chronicDisease, hepatitis, useMedication, whichMedication, course
+          whichCity, chronicDisease, hepatitis, useMedication, whichMedication, payment, course
+        }, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
         });
   
         Swal.fire({
@@ -233,9 +266,27 @@ const FormStudent = (): JSX.Element => {
     } catch (error) {
       Swal.fire({
         icon: 'error',
-        title: 'Atenção',
-        text: 'Ocorreu um erro ao salvar o cliente!'
+        title: error.response.data.title,
+        text: error.response.data.message
       });
+    }
+  }
+
+  const handleChangeCEP = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    setPostalCode(maskCEP(e.target.value));
+
+    if(e.target.value.replace(/\D/g, '').length === 8){
+      const response = await axios.get(`https://viacep.com.br/ws/${e.target.value.replace(/\D/g, '')}/json/`);
+      console.log(response.data);
+      setAddress(response.data.logradouro);
+      setProvince(response.data.bairro);
+      setCity(response.data.localidade);
+      setState(response.data.uf);
+    } else {
+      setAddress("");
+      setProvince("");
+      setCity("");
+      setState("");
     }
   }
 
@@ -263,8 +314,8 @@ const FormStudent = (): JSX.Element => {
               required 
               variant="outlined" 
               label="CPF" 
-              value={cpf}
-              onChange={(e) => setCpf(e.target.value)} 
+              value={maskCPF(cpf)}
+              onChange={(e) => setCpf(maskCPF(e.target.value))} 
             />
           </FormControl>
           <FormControl>
@@ -284,8 +335,8 @@ const FormStudent = (): JSX.Element => {
               variant="outlined" 
               label="Celular" 
               required
-              value={mobilePhone}
-              onChange={(e) => setMobilePhone(e.target.value)} 
+              value={maskPhoneNumber(mobilePhone)}
+              onChange={(e) => setMobilePhone(maskPhoneNumber(e.target.value))} 
             />
           </FormControl>
           <FormControl>
@@ -293,8 +344,8 @@ const FormStudent = (): JSX.Element => {
               disabled={action !== "view" ? false : true}
               variant="outlined" 
               label="Telefone" 
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)} 
+              value={maskPhoneNumber(phoneNumber)}
+              onChange={(e) => setPhoneNumber(maskPhoneNumber(e.target.value))}
             />
           </FormControl>
           <FormControl>
@@ -387,7 +438,6 @@ const FormStudent = (): JSX.Element => {
               color="primary" 
               checked={reservist} 
               onChange={(e) => setReservist(e.target.checked)} 
-              name="checkedA" 
             />
           }
           label="Reservista?"
@@ -399,7 +449,6 @@ const FormStudent = (): JSX.Element => {
               color="primary"
               checked={highSchool}
               onChange={(e) => setHighSchool(e.target.checked)}
-              name="checkedA" 
             />
           }
           label="Finalizou ensino médio?"
@@ -444,6 +493,15 @@ const FormStudent = (): JSX.Element => {
             ))}
           </Select>
         </FormControl>
+        <FormControl>
+          <TextField 
+            disabled={action !== "view" ? false : true}
+            variant="outlined" 
+            label="Valor da mensalidade" 
+            value={payment}
+            onChange={(e) => setPayment(Number(e.target.value))} 
+          />
+        </FormControl>
         </div>
         <div className={classes.span}>
           <span>Endereço</span>
@@ -454,13 +512,13 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="CEP" 
-            value={postalCode}
-            onChange={(e) => setPostalCode(e.target.value)} 
+            value={maskCEP(postalCode)}
+            onChange={(e) => handleChangeCEP(e)} 
           />
         </FormControl>
         <FormControl>
           <TextField 
-            disabled={action !== "view" ? false : true}
+            disabled={action === "view" ? true : postalCode !== '' ? true : false}
             variant="outlined" 
             label="Rua" 
             value={address}
@@ -487,7 +545,7 @@ const FormStudent = (): JSX.Element => {
         </FormControl>
         <FormControl>
           <TextField 
-            disabled={action !== "view" ? false : true}
+            disabled={action === "view" ? true : postalCode !== '' ? true : false}
             variant="outlined" 
             label="Bairro" 
             value={province}
@@ -496,7 +554,7 @@ const FormStudent = (): JSX.Element => {
         </FormControl>
         <FormControl>
           <TextField 
-            disabled={action !== "view" ? false : true}
+            disabled={action === "view" ? true : postalCode !== '' ? true : false}
             variant="outlined" 
             label="Cidade" 
             value={city}
@@ -505,7 +563,7 @@ const FormStudent = (): JSX.Element => {
         </FormControl>
         <FormControl>
           <TextField 
-            disabled={action !== "view" ? false : true}
+            disabled={action === "view" ? true : postalCode !== '' ? true : false}
             variant="outlined" 
             label="Estado" 
             value={state}
