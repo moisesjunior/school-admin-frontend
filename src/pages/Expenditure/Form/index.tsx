@@ -33,8 +33,7 @@ function NumberFormatCustom(props: NumberFormatCustomProps) {
         });
       }}
       decimalSeparator={'.'}
-      isNumericString
-      decimalScale={1}
+      decimalScale={2}
     />
   );
 }
@@ -252,7 +251,7 @@ const FormExpenditure = (): JSX.Element => {
             variant="outlined" 
             label="Valor da despesa" 
             value={value}
-            onChange={(e) => setValue(Number(e.target.value))} 
+            onChange={(e) => setValue(parseFloat(e.target.value))} 
             InputProps={{
               inputComponent: NumberFormatCustom as any
             }}
