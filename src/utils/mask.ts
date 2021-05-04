@@ -1,5 +1,5 @@
 export const maskCPF = (value: string) => {
-  if (value !== null ){
+  if (value !== null && value !== '' ){
     return value
       .replace(/\D/g, '')
       .replace(/(\d{3})(\d)/, '$1.$2')
@@ -12,7 +12,7 @@ export const maskCPF = (value: string) => {
 }
 
 export const maskPhoneNumber = (value: string) => {
-  if (value !== null ){
+  if (value !== null && value !== '' ){
     return value
       .replace(/\D/g, '')
       .replace(/(\d{2})(\d)/, '($1) $2')
@@ -24,7 +24,7 @@ export const maskPhoneNumber = (value: string) => {
 }
 
 export const maskCEP = (value: string) => {
-  if (value !== null ){
+  if (value !== null && value !== '' ){
     return value
       .replace(/\D/g, '')
       .replace(/(\d{5})(\d{3})/, '$1-$2')
