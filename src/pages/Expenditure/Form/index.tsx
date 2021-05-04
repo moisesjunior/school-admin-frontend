@@ -9,6 +9,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import SaveIcon from '@material-ui/icons/Save';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import NumberFormat from 'react-number-format';
+import { Auth } from 'aws-amplify';
 
 interface NumberFormatCustomProps {
   inputRef: (instance: NumberFormat | null) => void;
@@ -99,7 +100,12 @@ const FormExpenditure = (): JSX.Element => {
       setAction(location.state.action);
 
       const result = async () => {
-        const response = await api.get(`/expenditure/${location.state.id}`);
+        const currentSession = await Auth.currentSession();
+        const response = await api.get(`/expenditure/${location.state.id}`, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
+        });
         setDescription(response.data.description);
         setDueDate(response.data.dueDate);
         setValue(response.data.value);
@@ -116,6 +122,7 @@ const FormExpenditure = (): JSX.Element => {
     e.preventDefault()
 
     try {
+      const currentSession = await Auth.currentSession();
       if(id !== ''){
         await api.put(`/expenditure/${id}`,{
           description,
@@ -124,6 +131,10 @@ const FormExpenditure = (): JSX.Element => {
           expenditureType,
           referenceDate,
           paymentDay
+        }, {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
         });
   
         Swal.fire({
@@ -152,6 +163,10 @@ const FormExpenditure = (): JSX.Element => {
           expenditureType,
           referenceDate,
           paymentDay
+        },  {
+          headers: {
+            'CognitoIdToken': currentSession.getIdToken().getJwtToken()
+          }
         });
   
         Swal.fire({

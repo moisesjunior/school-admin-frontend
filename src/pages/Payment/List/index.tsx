@@ -24,7 +24,7 @@ const ListPayment = (): JSX.Element => {
         try{
           await api.delete(`/payment/${id}`, {
             headers: {
-              'X-Cognito-ID-Token': currentSession.getIdToken().getJwtToken()
+              'CognitoIdToken': currentSession.getIdToken().getJwtToken()
             }
           });
     
