@@ -7,6 +7,10 @@ import CreateIcon from '@material-ui/icons/Create';
 import { Auth } from 'aws-amplify';
 import api from '../../../services/api';
 import Swal from 'sweetalert2';
+import Filter from '../../../components/Filter';
+import { Button, TextField } from '@material-ui/core';
+import ClearIcon from '@material-ui/icons/Clear';
+import SearchIcon from '@material-ui/icons/Search';
 
 const ListExpenditure = (): JSX.Element => {
   const handleDelete = async (id?: string) => {
@@ -50,6 +54,23 @@ const ListExpenditure = (): JSX.Element => {
 
   return (
     <ContentPage>
+      <Filter name="Filtro de despesas">
+        <TextField 
+          variant="outlined"
+        />
+        <Button
+          startIcon={<ClearIcon />}
+          variant="outlined"
+        >
+          Limpar dados
+        </Button>
+        <Button
+          startIcon={<SearchIcon />}
+          variant="outlined"
+        >
+          Filtrar
+        </Button>
+      </Filter>
       <EnhancedTable
         name="Despesas"
         url="/expenditure"

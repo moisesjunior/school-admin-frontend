@@ -258,7 +258,7 @@ const NavBar = () => {
               />
             } 
             to="payments" 
-            primary="Pagamentos"
+            primary="Contas a receber"
           />
           <ListItemLink
             handle={handleDrawerClose} 
@@ -270,7 +270,7 @@ const NavBar = () => {
               />
             }
             to="expenditures"
-            primary="Despesas"
+            primary="Contas a pagar"
           />
           <ListItem button onClick={() => handleLogout()} key={"Sair"}>
             <ListItemIcon >
