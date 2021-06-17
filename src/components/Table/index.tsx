@@ -165,6 +165,8 @@ interface ToolbarProps {
   name: string;
   url?: string;
   title?: string;
+  handleFilter?: () => void;
+  filter?: string;
 }
 
 const EnhancedTableToolbar = (props: ToolbarProps) => {
@@ -185,6 +187,13 @@ const EnhancedTableToolbar = (props: ToolbarProps) => {
             </IconButton>
           </Tooltip>
         </NavLink>
+      }
+      { props.handleFilter !== undefined && props.filter !== undefined &&
+        <Tooltip title={props.filter} onClick={() => props.handleFilter}>
+          <IconButton>
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
       }
     </Toolbar>
   );
@@ -241,6 +250,8 @@ interface TableProps {
   formUrl?: string;
   emptyMessage: string;
   options: OptionsProp[];
+  handleFilter?: () => void;
+  filter?: string;
 }
 
 export default function EnhancedTable(props: TableProps) {
@@ -309,6 +320,8 @@ export default function EnhancedTable(props: TableProps) {
           name={props.name}
           title={props.title} 
           url={props.formUrl}
+          handleFilter={props.handleFilter}
+          filter={props.filter}
         />
         <TableContainer>
           <Table

@@ -7,6 +7,8 @@ import CreateIcon from '@material-ui/icons/Create';
 import { Auth } from 'aws-amplify';
 import api from '../../../services/api';
 import Swal from 'sweetalert2';
+import Filter from '../../../components/Filter';
+import { TextField } from '@material-ui/core';
 
 const ListPayment = (): JSX.Element => {
   const handleDelete = async (id?: string) => {
@@ -50,6 +52,11 @@ const ListPayment = (): JSX.Element => {
   
   return (
     <ContentPage>
+      <Filter name="Filtro de despesas">
+        <TextField 
+          variant="outlined"
+        />
+      </Filter>
       <EnhancedTable
         name="Pagamentos"
         url="/payment"
