@@ -279,7 +279,7 @@ export default function EnhancedTable(props: TableProps) {
     }
     
     result();
-  }, []);
+  }, [props.url]);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
     const isAsc = orderBy === property && order === 'asc';

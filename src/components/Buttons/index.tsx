@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
 interface IButton {
   cancelText: string;
   submitText: string;
   cancelIcon: JSX.Element;
   submitIcon: JSX.Element;
+  hidden?: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    hidden:{
+      display: 'none'
+    },
     button: {
       marginTop: '10px',
       display: 'flex',
@@ -32,8 +36,11 @@ const useStyles = makeStyles((theme: Theme) =>
 const Buttons = (props: IButton) => {
   const classes = useStyles();
 
+  useEffect(() => {
+  }, [props.hidden])
+
   return (
-    <div className={classes.button}>
+    <div className={props.hidden === true ? classes.hidden : classes.button}>
       <Button
         variant="outlined"
         startIcon={props.cancelIcon}
@@ -41,13 +48,11 @@ const Buttons = (props: IButton) => {
         classes={{
           root: classes.cancel
         }}
-        style={{
-          
-        }}
       >
         {props.cancelText}
       </Button>
       <Button
+        type="submit"
         variant="outlined"
         startIcon={props.submitIcon}
         color="primary"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import ContentPage from '../../../components/ContentPage';
 import EnhancedTable from '../../../components/Table';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -15,6 +15,22 @@ import DateFnsUtils from '@date-io/date-fns';
 const ListExpenditure = (): JSX.Element => {
   const [ referenceDateSearch, setReferenceDateSearch ] = useState<Date | null>(null);
   const [ expenditureTypeSearch, setExpenditureTypeSearch ] = useState('');
+  const [ url, setUrl ] = useState('/expenditure');
+
+  const handleFilter = (e: FormEvent) => {
+    e.preventDefault();
+    const dateFilter = referenceDateSearch || '';
+    var params = new URLSearchParams();
+
+
+    if (dateFilter !== '') {
+      params.set("referenceDate", dateFilter.toLocaleString());
+    }
+    if (expenditureTypeSearch !== ''){
+      params.set("expenditureType", expenditureTypeSearch);
+    }
+    setUrl('/expenditure?' + params.toString());
+  }
 
   const handleDelete = async (id?: string) => {
     const currentSession = await Auth.currentSession();
@@ -57,7 +73,7 @@ const ListExpenditure = (): JSX.Element => {
 
   return (
     <ContentPage>
-      <Filter name="Filtro de despesas">
+      <Filter onSubmit={handleFilter} name="Filtro de despesas">
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
             inputVariant="outlined"
@@ -92,7 +108,7 @@ const ListExpenditure = (): JSX.Element => {
       </Filter>
       <EnhancedTable
         name="Despesas"
-        url="/expenditure"
+        url={url}
         title="ADICIONAR DESPESA"
         filter="FILTRO DE DADOS"
         formUrl="/expenditure"

@@ -52,11 +52,6 @@ const ListPayment = (): JSX.Element => {
   
   return (
     <ContentPage>
-      <Filter name="Filtro de despesas">
-        <TextField 
-          variant="outlined"
-        />
-      </Filter>
       <EnhancedTable
         name="Pagamentos"
         url="/payment"
