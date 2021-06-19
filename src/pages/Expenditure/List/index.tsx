@@ -16,6 +16,7 @@ const ListExpenditure = (): JSX.Element => {
   const [ referenceDateSearch, setReferenceDateSearch ] = useState<Date | null>(null);
   const [ expenditureTypeSearch, setExpenditureTypeSearch ] = useState('');
   const [ url, setUrl ] = useState('/expenditure');
+  const [ page, setPage ] = useState(0);
 
   const handleFilter = (e: FormEvent) => {
     e.preventDefault();
@@ -24,12 +25,19 @@ const ListExpenditure = (): JSX.Element => {
 
 
     if (dateFilter !== '') {
-      params.set("referenceDate", dateFilter.toLocaleString());
+      params.set("referenceDate", dateFilter.toDateString());
     }
     if (expenditureTypeSearch !== ''){
       params.set("expenditureType", expenditureTypeSearch);
     }
     setUrl('/expenditure?' + params.toString());
+  }
+
+  const handleClear = () => {
+    setUrl('/expenditure');
+    setExpenditureTypeSearch('');
+    setReferenceDateSearch(null);
+    setPage(0);
   }
 
   const handleDelete = async (id?: string) => {
@@ -73,7 +81,7 @@ const ListExpenditure = (): JSX.Element => {
 
   return (
     <ContentPage>
-      <Filter onSubmit={handleFilter} name="Filtro de despesas">
+      <Filter onCancel={handleClear} onSubmit={handleFilter} name="Filtro de despesas">
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
             inputVariant="outlined"
@@ -107,6 +115,7 @@ const ListExpenditure = (): JSX.Element => {
         </FormControl>
       </Filter>
       <EnhancedTable
+        page={page}
         name="Despesas"
         url={url}
         title="ADICIONAR DESPESA"

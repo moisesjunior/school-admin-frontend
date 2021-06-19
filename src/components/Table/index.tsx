@@ -252,6 +252,7 @@ interface TableProps {
   options: OptionsProp[];
   handleFilter?: () => void;
   filter?: string;
+  page?: number;
 }
 
 export default function EnhancedTable(props: TableProps) {
@@ -276,10 +277,13 @@ export default function EnhancedTable(props: TableProps) {
       });
 
       setRows(response.data);
+      if(props.page !== undefined){
+        setPage(props.page);
+      }
     }
     
     result();
-  }, [props.url]);
+  }, [props.url, props.page]);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
     const isAsc = orderBy === property && order === 'asc';

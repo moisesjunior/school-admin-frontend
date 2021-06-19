@@ -6,6 +6,7 @@ interface IButton {
   cancelIcon: JSX.Element;
   submitIcon: JSX.Element;
   hidden?: boolean;
+  onCancel: () => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -48,6 +49,7 @@ const Buttons = (props: IButton) => {
         classes={{
           root: classes.cancel
         }}
+        onClick={props.onCancel}
       >
         {props.cancelText}
       </Button>

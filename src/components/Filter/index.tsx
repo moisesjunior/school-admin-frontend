@@ -61,6 +61,7 @@ const Filter = (props: IFilter) => {
           {props.children}
         </div>
         <Buttons 
+          onCancel={props.onCancel}
           cancelText="Limpar dados"
           submitText="Filtrar"
           cancelIcon={<ClearIcon />}
