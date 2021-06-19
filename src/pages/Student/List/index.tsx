@@ -144,10 +144,10 @@ const ListStudent = (): JSX.Element => {
             onChange={(e) => setStatusSearch(e.target.value as string)}
           >
             <MenuItem value=""><em>None</em></MenuItem>
-            <MenuItem value="ativo">Ativo</MenuItem>
-            <MenuItem value="trancado">Matrícula trancada</MenuItem>
-            <MenuItem value="reprovado">Reprovado</MenuItem>
-            <MenuItem value="desistente">Desistente</MenuItem>
+            <MenuItem value="Ativo">Ativo</MenuItem>
+            <MenuItem value="Trancado">Matrícula trancada</MenuItem>
+            <MenuItem value="Reprovado">Reprovado</MenuItem>
+            <MenuItem value="Desistente">Desistente</MenuItem>
           </Select>
         </FormControl>
       </Filter>
