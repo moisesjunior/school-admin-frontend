@@ -13,6 +13,7 @@ import { Course } from './index.d';
 import { useEffect } from 'react';
 import { FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import { maskCPF } from '../../../utils/mask';
+import { format } from 'date-fns';
 
 const ListStudent = (): JSX.Element => {
   const [ url, setUrl ] = useState('/customer');
@@ -164,6 +165,12 @@ const ListStudent = (): JSX.Element => {
           {id: "birthdate", disablePadding: true, label: "Data de nascimento", numeric: false, type: "date" },
           {id: "options", disablePadding: true, label: "", numeric: false }
         ]}
+        selectedCells={(value: any) => ({
+          name: value.name,
+          cpf: maskCPF(value.cpf),
+          email: value.email,
+          birthdate: format(new Date(value.birthdate), "dd/MM/yyyy"),
+        })}
         emptyMessage="Nenhum aluno cadastrado!"
         options={
           [

@@ -8,6 +8,7 @@ import ListIcon from '@material-ui/icons/List';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CreateIcon from '@material-ui/icons/Create';
+import { format } from 'date-fns';
 
 const ListCourse = (): JSX.Element => {
   const handleDelete = async (id?: string) => {
@@ -64,6 +65,12 @@ const ListCourse = (): JSX.Element => {
           {id: "options", disablePadding: true, label: "", numeric: false }
         ]}
         emptyMessage="Nenhum curso cadastrado!"
+        selectedCells={(value: any) => ({
+          description: value.description,
+          startAt: format(new Date(value.startAt), "dd/MM/yyyy"),
+          endAt: format(new Date(value.endAt), "dd/MM/yyyy"),
+          monthlyPayment: "R$ " + Number(value.monthlyPayment).toFixed(2),
+        })}
         options={
           [
             {

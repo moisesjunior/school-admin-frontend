@@ -11,6 +11,7 @@ import Filter from '../../../components/Filter';
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { format } from 'date-fns';
 
 const ListExpenditure = (): JSX.Element => {
   const [ referenceDateSearch, setReferenceDateSearch ] = useState<Date | null>(null);
@@ -128,6 +129,12 @@ const ListExpenditure = (): JSX.Element => {
           {id: "dueDate", disablePadding: true, label: "Vencimento", numeric: false, type: "date" },
           {id: "options", disablePadding: true, label: "", numeric: false }
         ]}
+        selectedCells={(value: any) => ({
+          description: value.description,
+          referenceDate: format(new Date(value.referenceDate), "MM/yyyy"),
+          expenditureType: value.expenditureType,
+          dueDate: format(new Date(value.dueDate), "dd/MM/yyyy"),
+        })}
         emptyMessage="Nenhuma despesa cadastrada!"
         options={
           [

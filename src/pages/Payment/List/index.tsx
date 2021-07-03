@@ -7,8 +7,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import { Auth } from 'aws-amplify';
 import api from '../../../services/api';
 import Swal from 'sweetalert2';
-import Filter from '../../../components/Filter';
-import { TextField } from '@material-ui/core';
+import { format } from 'date-fns';
 
 const ListPayment = (): JSX.Element => {
   const handleDelete = async (id?: string) => {
@@ -64,6 +63,12 @@ const ListPayment = (): JSX.Element => {
           {id: "dueDate", disablePadding: true, label: "Vencimento", numeric: false, type: "dueDate" },          
           {id: "options", disablePadding: true, label: "", numeric: false }
         ]}
+        selectedCells={(value: any) => ({
+          customer: value.customer.name,
+          description: value.description,
+          type: value.type,
+          dueDate: format(new Date(value.dueDate), "dd/MM/yyyy")
+        })}
         emptyMessage="Nenhum pagamento cadastrado!"
         options={
           [

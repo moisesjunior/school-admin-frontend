@@ -4,6 +4,8 @@ import { useLocation } from 'react-router-dom';
 import ContentPage from '../../../components/ContentPage';
 import EnhancedTable from '../../../components/Table';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import { format } from 'date-fns';
+import { maskCPF } from '../../../utils/mask';
 
 interface State {
   id: string;
@@ -25,6 +27,12 @@ const ClassAtCourses = (): JSX.Element => {
           {id: "birthdate", disablePadding: true, label: "Data de nascimento", numeric: false, type: "date" },
           {id: "options", disablePadding: true, label: "", numeric: false }
         ]}
+        selectedCells={(value: any) => ({
+          name: value.name,
+          cpf: maskCPF(value.cpf),
+          email: value.email,
+          birthdate: format(new Date(value.birthdate), "dd/MM/yyyy"),
+        })}
         emptyMessage="Nenhum aluno cadastrado nesse curso!"
         options={
           [{
