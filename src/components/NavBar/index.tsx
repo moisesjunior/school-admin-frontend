@@ -20,6 +20,7 @@ import SchoolIcon from '@material-ui/icons/School';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MoneyOffIcon from '@material-ui/icons/MoneyOff';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import PollIcon from '@material-ui/icons/Poll';
 import logo from '../../assets/logo_menu.png'
 import { UIStore } from '../../services/Store';
 import { useHistory, NavLink as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
@@ -258,7 +259,7 @@ const NavBar = () => {
               />
             } 
             to="payments" 
-            primary="Pagamentos"
+            primary="Contas a receber"
           />
           <ListItemLink
             handle={handleDrawerClose} 
@@ -270,7 +271,19 @@ const NavBar = () => {
               />
             }
             to="expenditures"
-            primary="Despesas"
+            primary="Contas a pagar"
+          />
+          <ListItemLink
+            handle={handleDrawerClose} 
+            icon={
+              <PollIcon
+                classes={{
+                  root: classes.icon
+                }}
+              />
+            }
+            to="cashFlow"
+            primary="Fluxo de caixa"
           />
           <ListItem button onClick={() => handleLogout()} key={"Sair"}>
             <ListItemIcon >

@@ -155,6 +155,7 @@ const FormExpenditure = (): JSX.Element => {
         });
   
       } else {
+        console.log('aqui');
         await api.post('/expenditure',{
           description,
           dueDate,
@@ -171,7 +172,7 @@ const FormExpenditure = (): JSX.Element => {
         Swal.fire({
           icon:'success',
           title: 'Sucesso!',
-          text: 'Curso criado com sucesso!',
+          text: 'Despesa criada com sucesso!',
           allowEscapeKey: false,
           allowOutsideClick: false,
           allowEnterKey: false,
@@ -187,6 +188,7 @@ const FormExpenditure = (): JSX.Element => {
         });
       } 
     } catch (error) {
+      console.log(error);
       Swal.fire({
         icon: 'error',
         title: 'Atenção',

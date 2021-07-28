@@ -10,6 +10,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Auth from '@aws-amplify/auth';
+import { Student } from '../../Student/List/index.d';
 import NumberFormat from 'react-number-format';
 
 interface Discount {
@@ -29,11 +30,6 @@ interface Fine {
 interface State {
   id: string;
   action: 'edit' | 'view';
-}
-
-interface Customer {
-  id: string;
-  name: string;
 }
 
 interface NumberFormatCustomProps {
@@ -58,6 +54,7 @@ function NumberFormatCustom(props: NumberFormatCustomProps) {
         });
       }}
       decimalSeparator={'.'}
+      isNumericString
       decimalScale={2}
     />
   );
@@ -100,21 +97,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Customer {
-  id: string;
-  name: string;
-}
-
 const FormPayment = (): JSX.Element => {
   const location = useLocation<State>();
   const history = useHistory();
   const classes = useStyles();
-  const [ customers, setCustomers ] = useState<Customer[]>([]);
+  const [ customers, setCustomers ] = useState<Student[]>([]);
 
   const [ id, setId ] = useState('');
   const [ action, setAction ] = useState('');
   const [ customerDisabled, setCustomerDisabled ] = useState(false);
-  const [ customer, setCustomer ] = useState<Customer | null>(null);
+  const [ customer, setCustomer ] = useState<Student | null>(null);
   const [ generateAssasPayment, setGenerateAssasPayment] = useState(false);
   const [ type, setType ] = useState('');
   const [ status, setStatus ] = useState('PENDING');
@@ -332,7 +324,10 @@ const FormPayment = (): JSX.Element => {
             required
             label="Valor" 
             value={value}
-            onChange={(e) => setValue(parseFloat(e.target.value))} 
+            onChange={(e) => setValue(Number(e.target.value))} 
+            InputProps={{
+              inputComponent: NumberFormatCustom as any
+            }}
           />
         </FormControl>
         <FormControlLabel
