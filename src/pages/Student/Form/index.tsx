@@ -15,6 +15,7 @@ import { Auth } from 'aws-amplify';
 import { maskCPF, maskPhoneNumber, maskCEP } from '../../../utils/mask';
 import { cpf as cpfvalidator } from 'cpf-cnpj-validator';
 import axios from 'axios';
+import NumberFormat from 'react-number-format';
 
 interface State {
   id: string;
@@ -24,6 +25,33 @@ interface State {
 interface Course {
   id: string;
   description: string;
+}
+
+interface NumberFormatCustomProps {
+  inputRef: (instance: NumberFormat | null) => void;
+  onChange: (event: { target: { name: string; value: string } }) => void;
+  name: string;
+}
+
+function NumberFormatCustom(props: NumberFormatCustomProps) {
+  const { inputRef, onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={inputRef}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      decimalSeparator={'.'}
+      decimalScale={2}
+    />
+  );
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -104,7 +132,7 @@ const FormStudent = (): JSX.Element => {
   const [ whichYear, setWhichYear ] = useState('');
   const [ whichCity, setWhichCity ] = useState('');
   const [ payment, setPayment ] = useState(0);
-  const [ course, setCourse ] = useState<string | null>(null);
+  const [ course, setCourse ] = useState<string | null>('');
 
   // Endereço
   const [ address, setAddress ] = useState('');
@@ -177,7 +205,7 @@ const FormStudent = (): JSX.Element => {
         setHepatitis(response.data.hepatitis);
         setUseMedication(response.data.useMedication);
         setWhichMedication(response.data.whichMedication);
-        setPayment(response.data.payment);
+        setPayment(Number(response.data.payment));
       }
     }
 
@@ -187,7 +215,7 @@ const FormStudent = (): JSX.Element => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    if(!cpfvalidator.isValid(cpf.replace(/\D/g, ''))){
+    if(cpf !== null && !cpfvalidator.isValid(cpf.replace(/\D/g, ''))){
       Swal.fire({
         icon: 'error',
         title: 'Atenção!',
@@ -201,12 +229,13 @@ const FormStudent = (): JSX.Element => {
       const currentSession = await Auth.currentSession();
       if(id !== ''){
         await api.put(`/customer/${id}`,{
-          name, cpf: cpf.replace(/\D/g, ''), email, phoneNumber: phoneNumber.replace(/\D/g, ''), mobilePhone: mobilePhone.replace(/\D/g, ''),
+          name, cpf: ( cpf !== null ? cpf.replace(/\D/g, '') : null), email, phoneNumber: (phoneNumber !== null ? phoneNumber.replace(/\D/g, '') : null), 
+          mobilePhone: ( mobilePhone !== null ? mobilePhone.replace(/\D/g, '') : null),
           birthdate, nationality, maritalStatus, address, addressNumber,
           complement, province, city, state, postalCode,
           rg, emitter, emissionDate, voterRegistration, reservist,
           fatherName, motherName, highSchool, whichSchool, whichYear,
-          whichCity, chronicDisease, hepatitis, useMedication, whichMedication, payment, course
+          whichCity, chronicDisease, hepatitis, useMedication, whichMedication, payment, course: (course === '' ? null : course)
         }, {
           headers: {
             'CognitoIdToken': currentSession.getIdToken().getJwtToken()
@@ -233,12 +262,13 @@ const FormStudent = (): JSX.Element => {
   
       } else {
         await api.post('/customer',{
-          name, cpf: cpf.replace(/\D/g, ''), email, phoneNumber: phoneNumber.replace(/\D/g, ''), mobilePhone: mobilePhone.replace(/\D/g, ''),
+          name, cpf: ( cpf !== null ? cpf.replace(/\D/g, '') : null), email, phoneNumber: (phoneNumber !== null ? phoneNumber.replace(/\D/g, '') : null), 
+          mobilePhone: ( mobilePhone !== null ? mobilePhone.replace(/\D/g, '') : null),
           birthdate, nationality, maritalStatus, address, addressNumber,
           complement, province, city, state, postalCode,
           rg, emitter, emissionDate, voterRegistration, reservist,
           fatherName, motherName, highSchool, whichSchool, whichYear,
-          whichCity, chronicDisease, hepatitis, useMedication, whichMedication, payment, course
+          whichCity, chronicDisease, hepatitis, useMedication, whichMedication, payment, course: (course === '' ? null : course)
         }, {
           headers: {
             'CognitoIdToken': currentSession.getIdToken().getJwtToken()
@@ -314,7 +344,7 @@ const FormStudent = (): JSX.Element => {
               required 
               variant="outlined" 
               label="CPF" 
-              value={maskCPF(cpf)}
+              value={cpf !== null ? maskCPF(cpf) : null}
               onChange={(e) => setCpf(maskCPF(e.target.value))} 
             />
           </FormControl>
@@ -335,7 +365,7 @@ const FormStudent = (): JSX.Element => {
               variant="outlined" 
               label="Celular" 
               required
-              value={maskPhoneNumber(mobilePhone)}
+              value={mobilePhone !== null ? maskPhoneNumber(mobilePhone) : null}
               onChange={(e) => setMobilePhone(maskPhoneNumber(e.target.value))} 
             />
           </FormControl>
@@ -344,7 +374,7 @@ const FormStudent = (): JSX.Element => {
               disabled={action !== "view" ? false : true}
               variant="outlined" 
               label="Telefone" 
-              value={maskPhoneNumber(phoneNumber)}
+              value={phoneNumber !== null ? maskPhoneNumber(phoneNumber) : null}
               onChange={(e) => setPhoneNumber(maskPhoneNumber(e.target.value))}
             />
           </FormControl>
@@ -393,7 +423,7 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="RG" 
-            value={rg}
+            value={rg !== null && rg !== '' ? rg : null}
             onChange={(e) => setRg(e.target.value)} 
           />
         </FormControl>
@@ -495,11 +525,14 @@ const FormStudent = (): JSX.Element => {
         </FormControl>
         <FormControl>
           <TextField 
-            disabled={action !== "view" ? false : true}
+            disabled={action !== "view" ? false : true} 
             variant="outlined" 
+            InputProps={{
+              inputComponent: NumberFormatCustom as any,
+            }}
             label="Valor da mensalidade" 
             value={payment}
-            onChange={(e) => setPayment(Number(e.target.value))} 
+            onChange={(e) => setPayment(parseFloat(e.target.value))} 
           />
         </FormControl>
         </div>
@@ -512,7 +545,7 @@ const FormStudent = (): JSX.Element => {
             disabled={action !== "view" ? false : true}
             variant="outlined" 
             label="CEP" 
-            value={maskCEP(postalCode)}
+            value={postalCode !== null ? maskCEP(postalCode) : null}
             onChange={(e) => handleChangeCEP(e)} 
           />
         </FormControl>

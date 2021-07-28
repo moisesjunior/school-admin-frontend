@@ -12,6 +12,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import Auth from '@aws-amplify/auth';
 import { Student } from '../../Student/List/index.d';
 import NumberFormat from 'react-number-format';
+
 interface Discount {
   value: number
   dueDateLimitDays: number,
@@ -110,7 +111,7 @@ const FormPayment = (): JSX.Element => {
   const [ type, setType ] = useState('');
   const [ status, setStatus ] = useState('PENDING');
   const [ billingType, setBillingType ] = useState('Boleto');
-  const [ value, setValue ] = useState(0);
+  const [ value, setValue ] = useState<number | null>(null);
   const [ dueDateFormat, setDueDateFormat ] = useState<Date | null>(null);
   const [ description, setDescription ] = useState('');
   const [ discount, setDiscount ] = useState<Discount>({
@@ -247,6 +248,12 @@ const FormPayment = (): JSX.Element => {
     }
   }
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const valueFormatted = parseFloat(event.target.value)
+
+    setValue(valueFormatted);
+  };
+
   return (
     <ContentPage>
       <h2>Formulário - Pagamento</h2>
@@ -311,6 +318,9 @@ const FormPayment = (): JSX.Element => {
           <TextField 
             disabled={action !== "view" ? false : true} 
             variant="outlined" 
+            InputProps={{
+              inputComponent: NumberFormatCustom as any,
+            }}
             required
             label="Valor" 
             value={value}
