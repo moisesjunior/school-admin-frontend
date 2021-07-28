@@ -102,8 +102,6 @@ export default function EnhancedTable(props: ITable) {
               <Rows 
                 selectedCells={props.selectedCells}
                 emptyRows={emptyRows}
-                headCells={props.headCells}
-                name={props.name}
                 options={props.options}
                 order={order}
                 orderBy={orderBy}

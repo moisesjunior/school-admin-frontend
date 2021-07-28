@@ -3,11 +3,9 @@ import { IOption } from '../Options/index.d';
 
 export interface IBody {
   rows: any;
-  headCells: HeadCell[];
   emptyRows: number;
   page: number;
   rowsPerPage: number;
-  name: string;
   options: IOption[];
   order: 'asc' | 'desc';
   orderBy: string;
