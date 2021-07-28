@@ -111,10 +111,10 @@ const ListPayment = (): JSX.Element => {
           />
         </FormControl>
         <FormControl variant="outlined">
-          <InputLabel id="labelType">Selecione o status</InputLabel>
+          <InputLabel id="labelType">Selecione o tipo</InputLabel>
           <Select
             labelId="labelType"
-            label="Status"
+            label="Tipos de pagamento"
             value={typeSearch}
             onChange={(e) => setTypeSearch(e.target.value as string)}
           >

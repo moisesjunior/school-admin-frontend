@@ -10,8 +10,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Auth from '@aws-amplify/auth';
-import { Student } from '../../Student/List/index.d';;
-
+import { Student } from '../../Student/List/index.d';
+import NumberFormat from 'react-number-format';
 interface Discount {
   value: number
   dueDateLimitDays: number,
@@ -29,6 +29,34 @@ interface Fine {
 interface State {
   id: string;
   action: 'edit' | 'view';
+}
+
+interface NumberFormatCustomProps {
+  inputRef: (instance: NumberFormat | null) => void;
+  onChange: (event: { target: { name: string; value: string } }) => void;
+  name: string;
+}
+
+function NumberFormatCustom(props: NumberFormatCustomProps) {
+  const { inputRef, onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={inputRef}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      decimalSeparator={'.'}
+      isNumericString
+      decimalScale={2}
+    />
+  );
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -287,6 +315,9 @@ const FormPayment = (): JSX.Element => {
             label="Valor" 
             value={value}
             onChange={(e) => setValue(Number(e.target.value))} 
+            InputProps={{
+              inputComponent: NumberFormatCustom as any
+            }}
           />
         </FormControl>
         <FormControlLabel
