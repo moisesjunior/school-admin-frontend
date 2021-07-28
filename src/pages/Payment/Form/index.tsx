@@ -325,9 +325,6 @@ const FormPayment = (): JSX.Element => {
             label="Valor" 
             value={value}
             onChange={(e) => setValue(Number(e.target.value))} 
-            InputProps={{
-              inputComponent: NumberFormatCustom as any
-            }}
           />
         </FormControl>
         <FormControlLabel
